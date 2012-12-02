@@ -27,6 +27,7 @@
 
   <PropertyGroup Condition="'$(Compiler)'=='MSVC2010'">
     <Compiler_Name>MSVC2010</Compiler_Name>
+    <Compiler_VSVer>10.0</Compiler_VSVer>
     <Compiler_Enabled>true</Compiler_Enabled>
     <Compiler_Win32>true</Compiler_Win32>
     <Compiler_Win64>true</Compiler_Win64>
@@ -39,6 +40,7 @@
 
   <PropertyGroup Condition="'$(Compiler)'=='MSVC2012'">
     <Compiler_Name>MSVC2012</Compiler_Name>
+    <Compiler_VSVer>11.0</Compiler_VSVer>
     <Compiler_Enabled>true</Compiler_Enabled>
     <Compiler_Win32>true</Compiler_Win32>
     <Compiler_Win64>true</Compiler_Win64>
@@ -120,7 +122,7 @@
   <!-- msbuild compiler -->
   <Target Name="CallCompiler_MsBuild" Condition="'$(Compiler_Builder)'=='msbuild'">
     <Exec Command="&quot;$(MSBuildToolsPath)\msbuild&quot; &quot;$(SolutionDir)/$(SolutionName)&quot; /p:Configuration=$(ConfigurationName) /t:$(BuildTarget) /m" Condition="$(BuildTarget)!='Install'"></Exec>
-    <Exec Command="&quot;$(MSBuildToolsPath)\msbuild&quot; &quot;$(SolutionDir)/INSTALL.vcxproj&quot; /p:Configuration=$(ConfigurationName) /t:Build" Condition="$(BuildTarget)=='Install'"></Exec>
+    <Exec Command="&quot;$(MSBuildToolsPath)\msbuild&quot; &quot;$(SolutionDir)/INSTALL.vcxproj&quot; /p:Configuration=$(ConfigurationName) /t:Build /p:VisualStudioVersion=$(Compiler_VSVer)" Condition="$(BuildTarget)=='Install'"></Exec>
   </Target>
 
   <Target Name="CallCompiler_Make" Condition="'$(Compiler_Builder)'=='make'">
