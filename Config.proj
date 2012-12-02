@@ -12,6 +12,10 @@
     <Step_Install>true</Step_Install>
     <Step_Test>false</Step_Test>
   </PropertyGroup>
+   
+  <PropertyGroup>
+    <OCECommonConfig>-D OCE_ADD_HEADERS=ON -D OCE_BUILD_SHARED_LIB=ON -D OCE_DATAEXCHANGE=ON -D OCE_DRAW=ON -D OCE_ENABLE_DEB_FLAG=OFF -D OCE_MODEL=ON -D OCE_OCAF=ON -D OCE_TESTING=ON -D OCE_VISUALISATION=ON -D OCE_WITH_FREEIMAGE=ON -D OCE_WITH_GL2PS=ON -D OCE_BUNDLE_AUTOINSTALL=ON -D OCE_INSTALL_PDB_FILES=ON -D OCE_USE_BUNDLE=ON -D OCE_USE_PCH=ON </OCECommonConfig>
+  </PropertyGroup>
   
   <PropertyGroup Condition="'$(Compiler)'=='MSVC2008'">
     <Compiler_Name>MSVC2008</Compiler_Name>
@@ -52,8 +56,10 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Compiler)'=='MINGW64'">
+    <!-- Default config overrides -->
+    <OCECommonConfig>-D OCE_ADD_HEADERS=ON -D OCE_BUILD_SHARED_LIB=ON -D OCE_DATAEXCHANGE=OFF -D OCE_DRAW=OFF -D OCE_ENABLE_DEB_FLAG=OFF -D OCE_MODEL=ON -D OCE_OCAF=OFF -D OCE_TESTING=ON -D OCE_VISUALISATION=OFF -D OCE_WITH_FREEIMAGE=OFF -D OCE_WITH_GL2PS=OFF -D OCE_BUNDLE_AUTOINSTALL=OFF -D OCE_INSTALL_PDB_FILES=OFF -D OCE_USE_BUNDLE=ON -D OCE_USE_PCH=ON </OCECommonConfig>
     <Compiler_Name>Mingw64</Compiler_Name>
-    <Compiler_Enabled>false</Compiler_Enabled>
+    <Compiler_Enabled>true</Compiler_Enabled>
     <Compiler_Win32>false</Compiler_Win32>
     <Compiler_Win64>true</Compiler_Win64>
     <Compiler_Multiconfig>false</Compiler_Multiconfig>
@@ -62,13 +68,10 @@
     <Compiler_ReleaseConfig>RelWithDebInfo</Compiler_ReleaseConfig>
     <Compiler_Builder>make</Compiler_Builder>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <OCECommonConfig>-D OCE_ADD_HEADERS=ON -D OCE_BUILD_SHARED_LIB=ON -D OCE_DATAEXCHANGE=ON -D OCE_DRAW=ON -D OCE_ENABLE_DEB_FLAG=OFF -D OCE_MODEL=ON -D OCE_OCAF=ON -D OCE_TESTING=ON -D OCE_VISUALISATION=ON -D OCE_WITH_FREEIMAGE=ON -D OCE_WITH_GL2PS=ON -D OCE_BUNDLE_AUTOINSTALL=ON -D OCE_INSTALL_PDB_FILES=ON -D OCE_USE_BUNDLE=ON -D OCE_USE_PCH=ON </OCECommonConfig>
-  </PropertyGroup>
-  
+ 
   <Target Name="PrintArgs">
-    <Message Text="No Argument given!" />
+    <Message Text="No Argument given, try:" />
+    <Message Text="msbuild /t:All /tv:4.0" />
   </Target>
 
   <Target Name="ConfigureBundle">
@@ -82,7 +85,13 @@
       <Compiler_CurrentGenerator>$(Compiler_Generator_Win64)</Compiler_CurrentGenerator>
     </PropertyGroup>
 
-    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D INSTALL_DIR=&quot;$(InstallDir)&quot; $(MSBuildProjectDirectory)/bundle" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/buildbundle" />
+    <!-- Multi config -->
+    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D INSTALL_DIR=&quot;$(InstallDir)&quot; $(MSBuildProjectDirectory)/bundle" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/buildbundle" Condition="'$(Compiler_Multiconfig)'=='true'" />
+
+    <!-- Single config -->
+    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D CMAKE_BUILD_TYPE=Debug -D INSTALL_DIR=&quot;$(InstallDir)&quot; $(MSBuildProjectDirectory)/bundle" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/buildbundle/Debug/" Condition="'$(Compiler_Multiconfig)'=='false'" />
+    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D CMAKE_BUILD_TYPE=$(Compiler_ReleaseConfig) -D INSTALL_DIR=&quot;$(InstallDir)&quot; $(MSBuildProjectDirectory)/bundle" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/buildbundle/$(Compiler_ReleaseConfig)" Condition="'$(Compiler_Multiconfig)'=='false'" />
+    
   </Target>
 
   <Target Name="ConfigureOCE">
@@ -103,7 +112,13 @@
       <TKOpts>-D TK_INCLUDE_PATH=$(TclDir)/include -D TK_LIBRARY=$(TclDir)/lib/tk85.lib -D TK_WISH=$(TclDir)/bin/wish.exe</TKOpts>
     </PropertyGroup>
 
-    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D OCE_INSTALL_PREFIX=&quot;$(InstallDir)&quot; $(OCECommonConfig) $(TCLOpts) $(TKOpts) $(BundleInstallDir) $(MSBuildProjectDirectory)/oce" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/build" />
+    <!-- Multi config -->
+    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D OCE_INSTALL_PREFIX=&quot;$(InstallDir)&quot; $(OCECommonConfig) $(TCLOpts) $(TKOpts) $(BundleInstallDir) $(MSBuildProjectDirectory)/oce" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/build" Condition="'$(Compiler_Multiconfig)'=='true'"/>
+
+    <!-- Single config -->
+    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D OCE_BUILD_TYPE=Debug -D OCE_INSTALL_PREFIX=&quot;$(InstallDir)&quot; $(OCECommonConfig) $(TCLOpts) $(TKOpts) $(BundleInstallDir) $(MSBuildProjectDirectory)/oce" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/build/Debug" Condition="'$(Compiler_Multiconfig)'=='false'"/>
+    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D OCE_BUILD_TYPE=$(Compiler_ReleaseConfig) -D OCE_INSTALL_PREFIX=&quot;$(InstallDir)&quot; $(OCECommonConfig) $(TCLOpts) $(TKOpts) $(BundleInstallDir) $(MSBuildProjectDirectory)/oce" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/build/$(Compiler_ReleaseConfig)" Condition="'$(Compiler_Multiconfig)'=='false'"/>
+    
   </Target>
   
   <!-- DevEnv compiler -->
@@ -126,14 +141,14 @@
   </Target>
 
   <Target Name="CallCompiler_Make" Condition="'$(Compiler_Builder)'=='make'">
-    <Exec Command="make" WorkingDirectory="$(SolutionDir)" Condition="$(BuildTarget)!='Install'"></Exec>
-    <Exec Command="make install" WorkingDirectory="$(SolutionDir)" Condition="$(BuildTarget)=='Install'"></Exec>
+    <Exec Command="make -j" WorkingDirectory="$(SolutionDir)/$(CfgDir)/" Condition="$(BuildTarget)!='Install'"></Exec>
+    <Exec Command="make install" WorkingDirectory="$(SolutionDir)/$(CfgDir)/" Condition="$(BuildTarget)=='Install'"></Exec>
   </Target>
 
   <Target Name="CallCompiler">
-    <CallTarget Targets="CallCompiler_MsBuild" Condition="'$(Compiler_Builder)'=='msbuild'" />
-    <CallTarget Targets="CallCompiler_DevEnv" Condition="'$(Compiler_Builder)'=='devenv'" />
-    <CallTarget Targets="CallCompiler_Make" Condition="'$(Compiler_Builder)'=='make'" />
+    <MSBuild Projects="$(MSBuildProjectFile)"  Targets="CallCompiler_MsBuild" Condition="'$(Compiler_Builder)'=='msbuild'" />
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="CallCompiler_DevEnv" Condition="'$(Compiler_Builder)'=='devenv'" />
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="CallCompiler_Make" Condition="'$(Compiler_Builder)'=='make'" />
   </Target>
 
   <Target Name="DoBuild">
@@ -142,8 +157,10 @@
     <MSBuild Projects="$(MSBuildProjectFile)" Targets="CallCompiler" Properties="$(CommonProps);ConfigurationName=Debug;BuildTarget=Install"  Condition="'$(Compiler_Multiconfig)'=='true'"/>
     <MSBuild Projects="$(MSBuildProjectFile)" Targets="CallCompiler" Properties="$(CommonProps);ConfigurationName=$(Compiler_ReleaseConfig);BuildTarget=Install"  Condition="'$(Compiler_Multiconfig)'=='true'"/>
 
-    <MSBuild Projects="$(MSBuildProjectFile)" Targets="CallCompiler" Properties="$(CommonProps);" Condition="'$(Compiler_Multiconfig)'=='false'" />
-    <MSBuild Projects="$(MSBuildProjectFile)" Targets="CallCompiler" Properties="$(CommonProps);BuildTarget=Install"  Condition="'$(Compiler_Multiconfig)'=='false'"/>
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="CallCompiler" Properties="$(CommonProps);CfgDir=Debug" Condition="'$(Compiler_Multiconfig)'=='false'" />
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="CallCompiler" Properties="$(CommonProps);CfgDir=$(Compiler_ReleaseConfig)" Condition="'$(Compiler_Multiconfig)'=='false'" />
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="CallCompiler" Properties="$(CommonProps);BuildTarget=Install;CfgDir=Debug"  Condition="'$(Compiler_Multiconfig)'=='false'"/>
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="CallCompiler" Properties="$(CommonProps);BuildTarget=Install;CfgDir=$(Compiler_ReleaseConfig)"  Condition="'$(Compiler_Multiconfig)'=='false'"/>
   </Target>
   
   <Target Name="BuildBundle">
@@ -163,13 +180,22 @@
   <Target Name="CreatePlatform">
     <MakeDir Directories="Build/$(Compiler_Name)/$(Platform)" />
     <MakeDir Directories="Build/$(Compiler_Name)/$(Platform)/buildbundle" />
+    <MakeDir Directories="Build/$(Compiler_Name)/$(Platform)/buildbundle/Debug" Condition="'$(Compiler_Multiconfig)'=='false'" />
+    <MakeDir Directories="Build/$(Compiler_Name)/$(Platform)/buildbundle/$(Compiler_ReleaseConfig)/" Condition="'$(Compiler_Multiconfig)'=='false'" />
     <MakeDir Directories="Build/$(Compiler_Name)/$(Platform)/build" />
+    <MakeDir Directories="Build/$(Compiler_Name)/$(Platform)/build/Debug" Condition="'$(Compiler_Multiconfig)'=='false'" />
+    <MakeDir Directories="Build/$(Compiler_Name)/$(Platform)/build/$(Compiler_ReleaseConfig)/" Condition="'$(Compiler_Multiconfig)'=='false'" />
     <MakeDir Directories="Build/$(Compiler_Name)/installbundle" />
     <MakeDir Directories="Build/$(Compiler_Name)/install" />
+    
+    <!-- Configure and build bundle -->
     <MSBuild Projects="$(MSBuildProjectFile)" Targets="ConfigureBundle" Condition="'$(Step_Configure)'=='true'"/>
     <MSBuild Projects="$(MSBuildProjectFile)" Targets="BuildBundle" Condition="'$(Step_Build)'=='true'"/>
+     
+    <!-- Configure and build OCE -->
     <MSBuild Projects="$(MSBuildProjectFile)" Targets="ConfigureOCE" Condition="'$(Step_Configure)'=='true'"/>
     <MSBuild Projects="$(MSBuildProjectFile)" Targets="BuildOCE" Condition="'$(Step_Build)'=='true'" />
+    
   </Target>
 
   <Target Name="Create" Condition="'$(Compiler_Enabled)'=='true'">
