@@ -86,11 +86,11 @@
     </PropertyGroup>
 
     <!-- Multi config -->
-    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D INSTALL_DIR=&quot;$(InstallDir)&quot; $(MSBuildProjectDirectory)/bundle" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/buildbundle" Condition="'$(Compiler_Multiconfig)'=='true'" />
+    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D OCE_WIN_BUNDLE_INSTALL_DIR=&quot;$(InstallDir)&quot; $(MSBuildProjectDirectory)/bundle" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/buildbundle" Condition="'$(Compiler_Multiconfig)'=='true'" />
 
     <!-- Single config -->
-    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D CMAKE_BUILD_TYPE=Debug -D INSTALL_DIR=&quot;$(InstallDir)&quot; $(MSBuildProjectDirectory)/bundle" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/buildbundle/Debug/" Condition="'$(Compiler_Multiconfig)'=='false'" />
-    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D CMAKE_BUILD_TYPE=$(Compiler_ReleaseConfig) -D INSTALL_DIR=&quot;$(InstallDir)&quot; $(MSBuildProjectDirectory)/bundle" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/buildbundle/$(Compiler_ReleaseConfig)" Condition="'$(Compiler_Multiconfig)'=='false'" />
+    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D CMAKE_BUILD_TYPE=Debug -D OCE_WIN_BUNDLE_INSTALL_DIR=&quot;$(InstallDir)&quot; $(MSBuildProjectDirectory)/bundle" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/buildbundle/Debug/" Condition="'$(Compiler_Multiconfig)'=='false'" />
+    <Exec Command="cmake -G &quot;$(Compiler_CurrentGenerator)&quot; -D CMAKE_BUILD_TYPE=$(Compiler_ReleaseConfig) -D OCE_WIN_BUNDLE_INSTALL_DIR=&quot;$(InstallDir)&quot; $(MSBuildProjectDirectory)/bundle" WorkingDirectory="Build/$(Compiler_Name)/$(Platform)/buildbundle/$(Compiler_ReleaseConfig)" Condition="'$(Compiler_Multiconfig)'=='false'" />
     
   </Target>
 
