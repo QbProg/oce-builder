@@ -54,12 +54,25 @@
     <Compiler_ReleaseConfig>RelWithDebInfo</Compiler_ReleaseConfig>
     <Compiler_Builder>msbuild</Compiler_Builder>
   </PropertyGroup>
+  
+   <PropertyGroup Condition="'$(Compiler)'=='MSVC2013'">
+    <Compiler_Name>MSVC2013</Compiler_Name>
+    <Compiler_VSVer>12.0</Compiler_VSVer>
+    <Compiler_Enabled>false</Compiler_Enabled>
+    <Compiler_Win32>true</Compiler_Win32>
+    <Compiler_Win64>true</Compiler_Win64>
+    <Compiler_Multiconfig>true</Compiler_Multiconfig>
+    <Compiler_Generator_Win32>Visual Studio 12</Compiler_Generator_Win32>
+    <Compiler_Generator_Win64>Visual Studio 12 Win64</Compiler_Generator_Win64>
+    <Compiler_ReleaseConfig>RelWithDebInfo</Compiler_ReleaseConfig>
+    <Compiler_Builder>msbuild</Compiler_Builder>
+  </PropertyGroup>
 
   <PropertyGroup Condition="'$(Compiler)'=='MINGW64'">
     <!-- Default config overrides -->
     <OCECommonConfig>-D OCE_ADD_HEADERS=ON -D OCE_BUILD_SHARED_LIB=ON -D OCE_DATAEXCHANGE=OFF -D OCE_DRAW=OFF -D OCE_ENABLE_DEB_FLAG=OFF -D OCE_MODEL=ON -D OCE_OCAF=OFF -D OCE_TESTING=ON -D OCE_VISUALISATION=OFF -D OCE_WITH_FREEIMAGE=OFF -D OCE_WITH_GL2PS=OFF -D OCE_BUNDLE_AUTOINSTALL=OFF -D OCE_INSTALL_PDB_FILES=OFF -D OCE_USE_BUNDLE=ON -D OCE_USE_PCH=ON </OCECommonConfig>
     <Compiler_Name>Mingw64</Compiler_Name>
-    <Compiler_Enabled>true</Compiler_Enabled>
+    <Compiler_Enabled>false</Compiler_Enabled>
     <Compiler_Win32>false</Compiler_Win32>
     <Compiler_Win64>true</Compiler_Win64>
     <Compiler_Multiconfig>false</Compiler_Multiconfig>
@@ -208,6 +221,7 @@
     <MSBuild Projects="$(MSBuildProjectFile)" Properties="Compiler=MSVC2008"  Targets="Create" />
     <MSBuild Projects="$(MSBuildProjectFile)" Properties="Compiler=MSVC2010"  Targets="Create" />
     <MSBuild Projects="$(MSBuildProjectFile)" Properties="Compiler=MSVC2012"  Targets="Create" />
+    <MSBuild Projects="$(MSBuildProjectFile)" Properties="Compiler=MSVC2013"  Targets="Create" />
     <MSBuild Projects="$(MSBuildProjectFile)" Properties="Compiler=MINGW64"  Targets="Create" />
   </Target>
 
