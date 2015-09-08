@@ -16,3 +16,8 @@ If you use MINGW, make sure you have the compiler on your path.
 > build build
 
 after the (long) compilation, you will find in each compiler dir the install folder which has a complete OCE distribution.
+
+--
+Cleanup of the build and install directories:
+
+> build clean

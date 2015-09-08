@@ -5,6 +5,10 @@ var opt_install_pdb = true;
 var opt_generateStatics = true;
 var opt_generateShared = true;
 
+var tcldir32 = "C:/tcl/";
+var tcldir64 = "C:/tcl64/";
+var tclversion = "86";
+
 var OCEOptions = ["-D OCE_ADD_HEADERS=ON",
                   "-D OCE_DATAEXCHANGE=OFF",
                   "-D OCE_DRAW=ON",
@@ -81,6 +85,8 @@ var explodeConfigs = function()
           i.is_static = false
           i.id = inpConf.id + "_" + inpConf.platforms[genidx] + (toolset != "" ? ("_" + toolset) : "");
           i.installDir = inpConf.id + (toolset != "" ? ("_" + toolset) : "")
+          i.tcldir = inpConf.platforms[genidx] == "Win32" ? tcldir32 : tcldir64;
+          
           if(opt_generateShared)
             buildConfigs.push(i);
           if(inpConf.generateStaticBuild && opt_generateStatics)
@@ -108,9 +114,10 @@ var generateConfig = function(config)
 {
   var buildDir = "build/" + config.id + "_build";
   var installDir = wd + "/install/" + config.installDir + "";
+  var tcldir = config.tcldir;
   var OCECommonConfig = OCEOptions.join(" ");
-  var TCLOpts = " ";
-  var TKOpts = " ";
+  var TCLOpts = " -D TCL_INCLUDE_PATH=" + tcldir + "/include -D TCL_LIBRARY=" + tcldir + "/lib/tcl" + tclversion + ".lib -D TCL_TCLSH=" + tcldir + "/bin/tclsh.exe";
+  var TKOpts = " -D TK_INCLUDE_PATH=" + tcldir + "/include -D TK_LIBRARY=" + tcldir + "/lib/tk" + tclversion + ".lib -D TK_WISH=" + tcldir + "/bin/wish.exe";
   var OCESpecificConfig = " ";
   if (config.is_static)
     OCESpecificConfig += " -D OCE_BUILD_SHARED_LIB=OFF";
@@ -157,6 +164,7 @@ if(env.param1 == "")
    log.message("build.bat config");
    log.message("build.bat build");
    log.message("build.bat all");
+   log.message("build.bat clean");
 }
 
 if(env.param1 === "config" || env.param1 == "all")
@@ -171,6 +179,12 @@ if(env.param1 == "build" || env.param1 == "all")
   buildConfigs.forEach( function(i) {
     compileConfig_msvc(i);
    });
+}
+
+if(env.param1 == "clean")
+{
+  folder.remove("build/");
+  folder.remove("install/");
 }
 
 // Debug
