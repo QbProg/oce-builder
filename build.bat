@@ -1,0 +1,1 @@
+train\train build.js -v=param1:%1 -v=param2:%2 -v=param3:%3 -l
