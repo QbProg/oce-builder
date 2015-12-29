@@ -133,7 +133,7 @@ var generateConfig = function(config)
   var cmake_toolset = "";
   if(config.toolset != "")
     cmake_toolset = " -T \"" + config.toolset + "\"";
-  var args = "-G \"" + config.generator + "\"" + cmake_toolset + " -D OCE_INSTALL_PREFIX=\"" + installDir + "\" " + OCECommonConfig + OCESpecificConfig + TCLOpts + TKOpts + " H:/oce/oce";
+  var args = "-G \"" + config.generator + "\"" + cmake_toolset + " -D OCE_INSTALL_PREFIX=\"" + installDir + "\" " + OCECommonConfig + OCESpecificConfig + TCLOpts + TKOpts + " ../../oce";
   
   log.message("Configuring " + config.id + " - " + config.text);
   shell.system(path + args,buildDir) ;
